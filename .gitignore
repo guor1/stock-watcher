@@ -1,0 +1,14 @@
+# dependencies
+node_modules/
+
+# Rust / Tauri build output
+src-tauri/target/
+src-tauri/gen/schemas/
+
+# OS
+Thumbs.db
+.DS_Store
+devlog.txt
+icon-src.png
+gen-icon.mjs
+preview.html

@@ -1,0 +1,164 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+html, body {
+  background: transparent;
+  overflow: hidden;
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+
+#bar {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px;
+  background: rgba(20, 24, 34, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  cursor: grab;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+#bar:hover {
+  background: rgba(20, 24, 34, 0.95);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+#bar:active {
+  cursor: grabbing;
+}
+
+/* Top bar: drag handle + settings button */
+#top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 20px;
+  margin-bottom: 4px;
+}
+
+#title {
+  font-size: 11px;
+  color: #6a7280;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding-left: 4px;
+}
+
+#controls button {
+  background: transparent;
+  border: none;
+  color: #9aa4b2;
+  font-size: 13px;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+#controls button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Unified quote list */
+#list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#list::-webkit-scrollbar { width: 4px; }
+#list::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+}
+
+/* One row — indices and stocks share the same column widths for alignment */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.row:hover { background: rgba(255, 255, 255, 0.06); }
+
+.row .name {
+  flex: 1;
+  min-width: 72px;
+  font-size: 12px;
+  color: #b8c0cc;
+  font-weight: 500;
+}
+
+.row .price {
+  min-width: 76px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.row .change {
+  min-width: 62px;
+  text-align: right;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.row .pct {
+  min-width: 60px;
+  text-align: right;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Index rows: brighter name + subtle accent */
+.row-index {
+  background: rgba(255, 255, 255, 0.05);
+}
+.row-index .name {
+  color: #dfe4ea;
+  font-weight: 600;
+}
+
+/* Separator between indices and stocks */
+.sep {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 2px;
+}
+
+/* Colors */
+.up { color: #ff5b5b; }
+.down { color: #26c281; }
+.flat { color: #c8c8c8; }
+
+.loading {
+  color: #8a92a0;
+  font-size: 13px;
+  padding: 6px 8px;
+}
+
+.error {
+  color: #ff8a8a;
+  font-size: 12px;
+  padding: 6px 8px;
+}

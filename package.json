@@ -1,0 +1,16 @@
+{
+  "name": "stock-watcher",
+  "version": "0.1.0",
+  "description": "盯盘桌面小软件 — 置顶悬浮条实时行情",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "icon": "tauri icon"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}
