@@ -69,6 +69,54 @@ html, body {
   color: #fff;
 }
 
+/* Whole-market turnover summary — two-column layout */
+#market {
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.market-grid {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.mg-cell {
+  flex: 1;
+  padding: 4px 10px;
+  min-width: 0;
+}
+
+.mg-cell + .mg-cell {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mg-label {
+  display: block;
+  font-size: 11px;
+  color: #8a92a0;
+  margin-bottom: 3px;
+}
+
+.mg-val {
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.mg-val.gold {
+  color: #f0d18a;
+}
+
+.mg-unit {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.7;
+  font-style: normal;
+  margin-left: 1px;
+}
+
 /* Unified quote list */
 #list {
   display: flex;

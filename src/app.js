@@ -75,9 +75,45 @@ async function poll() {
   } catch (e) {
     showError(e);
   }
+
+  // Whole-market turnover — independent of the quote fetch, so a failure
+  // here shouldn't blank out the watchlist.
+  try {
+    const market = await invoke("fetch_market_turnover");
+    renderMarket(market);
+  } catch (e) {
+    console.warn("fetch market turnover failed:", e);
+  }
 }
 
 // ─── Render ───────────────────────────────────────────────
+// Convert a yuan amount to a 亿 string, e.g. 2559898300000 → "25598.98".
+function toYi(yuan) {
+  return (yuan / 1e8).toFixed(2);
+}
+
+function renderMarket(m) {
+  const el = document.getElementById("market");
+  if (!m) return;
+
+  const change = m.turnover_change || 0;
+  const cls = change > 0 ? "up" : change < 0 ? "down" : "flat";
+  const sign = change > 0 ? "+" : "";
+
+  el.innerHTML = `
+    <div class="market-grid">
+      <div class="mg-cell">
+        <span class="mg-label">今日成交额</span>
+        <span class="mg-val gold">${toYi(m.turnover)}<i class="mg-unit">亿</i></span>
+      </div>
+      <div class="mg-cell">
+        <span class="mg-label">较昨日</span>
+        <span class="mg-val ${cls}">${sign}${toYi(change)}<i class="mg-unit">亿</i></span>
+      </div>
+    </div>`;
+  resizeToContent();
+}
+
 function render(quotes) {
   const listEl = document.getElementById("list");
 

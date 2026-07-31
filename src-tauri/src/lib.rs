@@ -12,6 +12,12 @@ async fn fetch_quotes(codes: Vec<String>) -> Result<Vec<quote::Quote>, String> {
     quote::fetch_quotes(codes).await
 }
 
+/// Fetch whole-market turnover (今日实时成交额 / 较昨日变动) from 同花顺.
+#[tauri::command]
+async fn fetch_market_turnover() -> Result<quote::MarketTurnover, String> {
+    quote::fetch_market_turnover().await
+}
+
 /// Return the persisted config.
 #[tauri::command]
 fn get_config(app: AppHandle) -> AppConfig {
@@ -168,6 +174,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             fetch_quotes,
+            fetch_market_turnover,
             get_config,
             save_config,
             open_settings,

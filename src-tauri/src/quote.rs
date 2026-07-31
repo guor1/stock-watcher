@@ -1,6 +1,62 @@
 use encoding_rs::GBK;
 use serde::Serialize;
 
+/// Whole-market turnover snapshot from 同花顺 (10jqka).
+/// Values are in yuan; the frontend converts to 亿.
+#[derive(Debug, Clone, Serialize)]
+pub struct MarketTurnover {
+    /// 今日实时成交额 (当日成交额), in yuan.
+    pub turnover: f64,
+    /// 较昨日同期变动, in yuan (can be negative).
+    pub turnover_change: f64,
+}
+
+/// Fetch whole-market turnover ("市场成交额分时") from 同花顺.
+///
+/// The response is JSON; the `data.charts.header` array carries the latest
+/// summary values keyed by `turnover` (当日成交额) and `turnover_change`
+/// (较昨日变动). We read those directly rather than the minute-by-minute
+/// `point_list`.
+pub async fn fetch_market_turnover() -> Result<MarketTurnover, String> {
+    let url = "https://dq.10jqka.com.cn/fuyao/market_analysis_api/chart/v1/get_chart_data?chart_key=turnover_minute";
+
+    let client = reqwest::Client::new();
+    let resp = client
+        .get(url)
+        .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+        .header("Referer", "https://dq.10jqka.com.cn/")
+        .send()
+        .await
+        .map_err(|e| format!("HTTP request failed: {}", e))?;
+
+    let body = resp
+        .text()
+        .await
+        .map_err(|e| format!("Failed to read response body: {}", e))?;
+
+    let json: serde_json::Value =
+        serde_json::from_str(&body).map_err(|e| format!("Failed to parse JSON: {}", e))?;
+
+    let header = json["data"]["charts"]["header"]
+        .as_array()
+        .ok_or("unexpected response shape: missing data.charts.header")?;
+
+    let mut turnover = 0.0;
+    let mut turnover_change = 0.0;
+    for item in header {
+        match item["key"].as_str() {
+            Some("turnover") => turnover = item["val"].as_f64().unwrap_or(0.0),
+            Some("turnover_change") => turnover_change = item["val"].as_f64().unwrap_or(0.0),
+            _ => {}
+        }
+    }
+
+    Ok(MarketTurnover {
+        turnover,
+        turnover_change,
+    })
+}
+
 /// A single stock/index quote parsed from Tencent Finance API.
 #[derive(Debug, Clone, Serialize)]
 pub struct Quote {
