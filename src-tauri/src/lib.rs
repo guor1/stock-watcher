@@ -36,6 +36,7 @@ fn save_config(app: AppHandle, config: AppConfig) -> Result<(), String> {
 #[tauri::command]
 fn open_settings(app: AppHandle) -> Result<(), String> {
     if let Some(win) = app.get_webview_window("settings") {
+        let _ = win.unminimize();
         win.show().map_err(|e| e.to_string())?;
         let _ = win.set_focus();
         Ok(())
@@ -53,17 +54,29 @@ fn close_settings(app: AppHandle) -> Result<(), String> {
     Ok(())
 }
 
-/// Toggle main window visibility (used by the boss key).
+/// Bring a window back to a normal, visible, focused state.
+///
+/// `show()` alone is not enough on Windows: `IsWindowVisible` (what
+/// `is_visible()` reads) stays `true` for a minimized window, and
+/// `ShowWindow(SW_SHOW)` shows a still-minimized window without restoring it.
+fn reveal_window(app: &AppHandle, label: &str) {
+    if let Some(win) = app.get_webview_window(label) {
+        let _ = win.unminimize();
+        let _ = win.show();
+        let _ = win.set_focus();
+    }
+}
+
+/// Toggle main window visibility (used by the boss key and the tray icon).
 fn toggle_main(app: &AppHandle) {
     if let Some(win) = app.get_webview_window("main") {
+        let minimized = win.is_minimized().unwrap_or(false);
         match win.is_visible() {
-            Ok(true) => {
+            // A minimized window still reports as visible — treat it as hidden.
+            Ok(true) if !minimized => {
                 let _ = win.hide();
             }
-            _ => {
-                let _ = win.show();
-                let _ = win.set_focus();
-            }
+            _ => reveal_window(app, "main"),
         }
     }
 }
@@ -102,15 +115,12 @@ fn build_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         .icon(icon)
         .tooltip("盯盘小助手")
         .menu(&menu)
+        // Left click toggles the bar; the menu stays on right click only.
+        .show_menu_on_left_click(false)
         .on_menu_event(|app, event| {
             match event.id().as_ref() {
                 "show" => toggle_main(app),
-                "settings" => {
-                    if let Some(win) = app.get_webview_window("settings") {
-                        let _ = win.show();
-                        let _ = win.set_focus();
-                    }
-                }
+                "settings" => reveal_window(app, "settings"),
                 "quit" => {
                     app.exit(0);
                 }
